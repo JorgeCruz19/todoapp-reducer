@@ -1,6 +1,9 @@
 import { useReducer, useEffect } from 'react';
-import { todoReducer } from './reducers/todoReducer'
+import { todoReducer } from './reducers/todoReducer';
 import {useForm} from './hooks/useForm';
+import Header from './components/Header';
+import TodoForm from './components/TodoForm';
+import TodoItem from './components/TodoItem';
 
 import './todoapp.css';
 
@@ -13,7 +16,8 @@ function TodoApp() {
 
   const [todos, dispatch] = useReducer(todoReducer, [], init)
   
-  const [ { description }, handleInputChange, reset] = useForm({
+  const [ { description, title }, handleInputChange, reset ] = useForm({
+    title: '',
     description: ''
   })
 
@@ -25,12 +29,13 @@ function TodoApp() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (description.trim().length <= 1) {
+    if (title.trim().length <= 1 ||  description.trim().length <= 1) {
       return;
     }
 
     const newTodo = {
       id: new Date().getTime(),
+      title: title,
       desc: description,
       done: false,
     }
@@ -40,45 +45,67 @@ function TodoApp() {
       payload: newTodo
     }
 
-    dispatch(action)
+    dispatch(action);
     reset();
   }
 
+  const handleDone = (todoId) => {
+    //Otra forma de enviar el type y el payload
+    dispatch({
+      type: 'done',
+      payload: todoId
+    });
+  }
+
+  const handleDelete = (todoId) => {
+    
+    const action  = {
+      type: 'delete', 
+      payload: todoId
+    }
+    
+    dispatch(action);
+  }
+
   return (
-    <div className="container py-5">
-      <header className="">
-        <h1 className="mb-5">TodoApp ({todos.length})</h1>
-      </header>
-
-      <form onSubmit={handleSubmit}>
-        <div className="input-group mb-3">
-          <input 
-            type="text" 
-            name="description" 
-            value={description} 
-            onChange={handleInputChange} 
-            className="form-control" 
-            placeholder="Ingrese el ToDo" 
-            autoComplete="off" 
-            aria-label="Ingrese el ToDo" 
-            aria-describedby="button-addon2" 
-          />
-          <div className="input-group-append">
-            <button className="btn btn-outline-primary" type="submit" id="btn-submit">Agregar</button>
-          </div>
+    <div className="container-fluid py-5">
+      <Header countTodos={todos.length}/>
+      <div className="row">
+        <TodoForm
+          title={title}
+          description={description}
+          handleInputChange={handleInputChange}  
+          handleSubmit={handleSubmit}
+        />
+       <div className="col-12 col-lg-9">
+          {todos.length > 0 ?
+            <ul className="list-group">
+              <div className="row">
+                {
+                  todos.map(({ id, title, desc, done }, iteracion) => (
+                    <TodoItem 
+                     key={id} 
+                     id={id}
+                     title={title}
+                     desc={desc}
+                     done={done}
+                     handleDelete={handleDelete}
+                     handleDone= {handleDone}
+                     iteracion={iteracion}
+                    />
+                  ))
+                }  
+              </div>             
+            </ul>
+            
+            :
+            
+            <p className="nothing">No hay tareas</p>
+          }
         </div>
-      </form>
+      </div>
+   
 
-      <ul className="list-group">
-        {
-          todos.map((todo, i) => (
-              <li key={todo.id} className="d-flex justify-content-between align-items-center list-group-item mb-1 py-3" >
-                {i + 1}. {todo.desc}
-                <button className="btn btn-danger">Borrar</button>
-              </li>
-          ))
-        }
-      </ul>
     </div>
   );
 }

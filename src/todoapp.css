@@ -1,3 +1,30 @@
 .bg-yellow {
   background-color: #fff9de;
 }
+.nothing {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: gray;
+}
+.dropdown {
+  cursor: pointer;
+}
+.fa-ellipsis-h {
+  color: #b2afa1;
+}
+.title {
+  color: #69665c;
+  font-size: 1.2rem;
+}
+.done {
+  text-decoration: line-through;
+}
+.btn-accent {
+  color: #ffffff;
+  background-color: #69665c;
+}
+.btn-accent:hover {
+  color: #ffffff;
+  background-color: #5d5b51;
+}
